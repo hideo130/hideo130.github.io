@@ -1,0 +1,2 @@
+baseURL = "https://hideo130.github.io"
+publishDir = "public"

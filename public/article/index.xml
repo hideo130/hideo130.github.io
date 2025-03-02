@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Articles on hideo&#39;s blog</title>
+    <link>http://localhost:1313/article/</link>
+    <description>Recent content in Articles on hideo&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-JP</language>
+    <lastBuildDate>Sun, 02 Mar 2025 17:06:06 +0900</lastBuildDate>
+    <atom:link href="http://localhost:1313/article/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My First Post</title>
+      <link>http://localhost:1313/article/my-first-post/</link>
+      <pubDate>Sun, 02 Mar 2025 17:06:06 +0900</pubDate>
+      <guid>http://localhost:1313/article/my-first-post/</guid>
+      <description>adga</description>
+    </item>
+  </channel>
+</rss>
