@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Binary Hack RebootedのHack22のbinfmt_miscに関して - hideo&#39;s blog</title>
@@ -15,6 +15,7 @@
 	
 
 	<link rel="shortcut icon" href="/favicon.ico">
+		
 		
 </head>
 <body class="body">
@@ -77,8 +78,10 @@ Binary Hack Rebootedではqemu-user-staticをインストールしたら後に�
  ffffffffffffff00fffffffffffffffffeffffff
 </code></pre><p>マスクが00の部分はELFヘッダでOS ABIです。magic中では03となっていて、elf.hを見ると以下のように記載されています。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elf.h" data-lang="elf.h"><span style="display:flex;"><span> <span style="color:#75715e">#define ELFOSABI_GNU		3	</span><span style="color:#75715e">/* Object uses GNU ELF extensions.  */</span><span style="color:#75715e">
-</span></span></span></code></pre></div><p>マスクでef ffと一致する部分のmagicは02 00で、ELF Hdeaderのe_typeの部分です。実行ファイル(value=2)や共有ライブラリ(value=3)の時に実行可能となるようにみえました。</p>
-
+</span></span></span></code></pre></div><p>マスクでef ffと一致する部分のmagicは02 00で、ELF Hdeaderのe_typeの部分です。実行ファイル(value=2)や共有ライブラリ(value=3)の時に実行可能となるようにみえました。
+また、magicの末尾の方のb7の位置がELF Headerのe_machineを表している。b7はAarch64を表す。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elf.h" data-lang="elf.h"><span style="display:flex;"><span><span style="color:#75715e">#define EM_AARCH64	183	</span><span style="color:#75715e">/* ARM AARCH64 */</span><span style="color:#75715e">
+</span></span></span></code></pre></div>
 		</div>
 	</article>
 </main>
@@ -91,7 +94,7 @@ Binary Hack Rebootedではqemu-user-staticをインストールしたら後に�
 	<form class="widget-search__form" role="search" method="get" action="https://google.com/search">
 		<input class="widget-search__field" type="search" placeholder="Search…" value="" name="q" aria-label="Search…">
 		<input class="widget-search__submit" type="submit" value="Search">
-		<input type="hidden" name="sitesearch" value="http://localhost:1313/">
+		<input type="hidden" name="sitesearch" value="https://example.org/">
 	</form>
 </div>
 <div class="widget-recent widget">
