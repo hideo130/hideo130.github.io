@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Binfmt_misc - hideo&#39;s blog</title>
+	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+	<meta name="description" content="">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+
+	<link rel="stylesheet" href="/css/style.css">
+	
+
+	<link rel="shortcut icon" href="/favicon.ico">
+		
+</head>
+<body class="body">
+	<div class="container container--outer">
+		<header class="header">
+	<div class="container header__container">
+		
+	<div class="logo">
+		<a class="logo__link" href="/" title="hideo&#39;s blog" rel="home">
+			<div class="logo__item logo__text">
+					<div class="logo__title">hideo&#39;s blog</div>
+					
+				</div>
+		</a>
+	</div>
+		<div class="divider"></div>
+	</div>
+</header>
+		<div class="wrapper flex">
+			<div class="primary">
+			
+<main class="main" role="main">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">Binfmt_misc</h1>
+			
+		</header>
+		<div class="content post__content clearfix">
+			<h1 id="binary-hack-rebootedのhack22に関して">Binary Hack RebootedのHack22に関して</h1>
+<p>本文中ではqemu-user-staticをインストールしたら、自動的にAArch64のバイナリを実行できるような手順になっています。</p>
+<p>自分の環境では、qemu-user-staticをインストールしても、自動的にAArch64のバイナリを実行できるよう設定されませんでした。そのため、binfmt_miscの設定をする必要があり、本文中の<code>cat /proc/sys/fs/binfmt_misc/qemu-aarch64</code>と一致するよう設定しました。</p>
+<p>自分の環境です。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span> $ uname -a
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span> Linux XXX 5.15.123.1-microsoft-standard-WSL2 <span style="color:#75715e">#1 SMP Mon Aug 7 19:01:48 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span> $ sudo apt list --installed | grep qemu-user-static
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span> 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span> WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span> 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span> qemu-user-static/noble-updates,now 1:8.2.2+ds-0ubuntu1.6 amd64 <span style="color:#f92672">[</span>installed<span style="color:#f92672">]</span>
+</span></span></code></pre></div><p>インタプリタがインストールされていることは確認できました。</p>
+<pre tabindex="0"><code> $ ls /usr/libexec/qemu-binfmt/ | grep aarch64
+ aarch64-binfmt-P
+</code></pre><p>以下のコマンドを実行して、aarch64向けのバイナリを実行できるようになります。</p>
+<pre tabindex="0"><code> echo &#39;:qemu-aarch64:M::\x7f\x45\x4c\x46\x02\x01\x01\x03\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/libexec/qemu-binfmt/aarch64-binfmt-P:POC&#39; | sudo tee /proc/sys/fs/binfmt_misc/register 
+</code></pre><pre tabindex="0"><code> $ ./hello-aarch64 
+ Hello, World!
+</code></pre><p>ちなみに、registerにインタプリタの後続のPOCを省くと以下のエラーが出ました。</p>
+<pre tabindex="0"><code> ./hello-aarch64 
+ qemu: /usr/libexec/qemu-binfmt/aarch64-binfmt-P has to be run using kernel binfmt-misc subsystem
+</code></pre><p>削除対象に-1を書き込み、削除してフラグをつけて再登録しました。</p>
+<pre tabindex="0"><code> echo -1 | sudo tee /proc/sys/fs/binfmt_misc/qemu-aarch64 
+</code></pre><p>折角なので、マスクを確認することにしました。</p>
+<pre tabindex="0"><code> $ hexdump -C ./hello-aarch64 | head
+ 00000000  7f 45 4c 46 02 01 01 03  00 00 00 00 00 00 00 00  |.ELF............|
+ 00000010  02 00 b7 00 01 00 00 00  40 06 40 00 00 00 00 00  |........@.@.....|
+</code></pre><pre tabindex="0"><code> 7f454c460201010300000000000000000200b700
+ ffffffffffffff00fffffffffffffffffeffffff
+</code></pre><p>マスクが00の部分はELFヘッダでOS ABIです。magic中では03となっていて、elf.hを見ると以下のように記載されています。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-elf.h" data-lang="elf.h"><span style="display:flex;"><span> <span style="color:#75715e">#define ELFOSABI_GNU		3	</span><span style="color:#75715e">/* Object uses GNU ELF extensions.  */</span><span style="color:#75715e">
+</span></span></span></code></pre></div><p>マスクでef ffと一致する部分のmagicは02 00で、ELF Hdeaderのe_typeの部分です。実行ファイル（値2)や共有ライブラリ(値3)の時に実行可能となるようにみえました。</p>
+
+		</div>
+	</article>
+</main>
+
+
+
+
+			</div>
+			<aside class="sidebar"><div class="widget-search widget">
+	<form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+		<input class="widget-search__field" type="search" placeholder="Search…" value="" name="q" aria-label="Search…">
+		<input class="widget-search__submit" type="submit" value="Search">
+		<input type="hidden" name="sitesearch" value="http://localhost:1313/">
+	</form>
+</div>
+<div class="widget-recent widget">
+	<h4 class="widget__title">Recent Posts</h4>
+	<div class="widget__content">
+		<ul class="widget__list">
+			<li class="widget__item"><a class="widget__link" href="/articles/2025/binfmt_misc/">Binfmt_misc</a></li>
+		</ul>
+	</div>
+</div>
+</aside>
+		</div>
+		<footer class="footer">
+	<div class="container footer__container flex">
+		
+		<div class="footer__copyright">
+			&copy; 2025 hideo&#39;s blog.
+			<span class="footer__copyright-credits">Generated with <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> and <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> theme.</span>
+		</div>
+	</div>
+</footer>
+	</div>
+<script async defer src="/js/menu.js"></script>
+</body>
+</html>

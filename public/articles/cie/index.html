@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Cie - hideo&#39;s blog</title>
+	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+	<meta name="description" content="">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+
+	<link rel="stylesheet" href="/css/style.css">
+	
+
+	<link rel="shortcut icon" href="/favicon.ico">
+		
+</head>
+<body class="body">
+	<div class="container container--outer">
+		<header class="header">
+	<div class="container header__container">
+		
+	<div class="logo">
+		<a class="logo__link" href="/" title="hideo&#39;s blog" rel="home">
+			<div class="logo__item logo__text">
+					<div class="logo__title">hideo&#39;s blog</div>
+					
+				</div>
+		</a>
+	</div>
+		<div class="divider"></div>
+	</div>
+</header>
+		<div class="wrapper flex">
+			<div class="primary">
+			
+<main class="main" role="main">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">Cie</h1>
+			
+		</header>
+		<div class="content post__content clearfix">
+			<p>C++で例外が発生したときに、実行されるCIEの命令列を特定します。</p>
+<p>CIEを読み込むプログラムにbreakpointを設定します。
+現在実行しているCIEのアドレスがわかります。
+このアドレスから、実行しているファイルを</p>
+<p>gccをコンパイルしてインストールします。</p>
+<pre tabindex="0"><code>LD_PRELOAD=/usr/local/lib64/libgcc_s.so.1:/usr/local/lib64/libstdc++.so.6  gdb ./a.out -q
+b main
+</code></pre><pre tabindex="0"><code> ps aux  | grep a.out
+</code></pre><pre tabindex="0"><code>cat /proc/92850/maps
+</code></pre><pre tabindex="0"><code>7ffff7a0c000-7ffff7a10000 rw-p 00000000 00:00 0 
+7ffff7a10000-7ffff7a38000 r--p 00000000 08:20 54259                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7ffff7a38000-7ffff7bc0000 r-xp 00028000 08:20 54259                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7ffff7bc0000-7ffff7c0f000 r--p 001b0000 08:20 54259                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7ffff7c0f000-7ffff7c13000 r--p 001fe000 08:20 54259                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7ffff7c13000-7ffff7c15000 rw-p 00202000 08:20 54259                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7ffff7c15000-7ffff7c22000 rw-p 00000000 00:00 0 
+7ffff7c22000-7ffff7c26000 r--p 00000000 08:20 73957                      /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7ffff7c26000-7ffff7c4a000 r-xp 00004000 08:20 73957                      /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7ffff7c4a000-7ffff7c4e000 r--p 00028000 08:20 73957                      /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7ffff7c4e000-7ffff7c4f000 r--p 0002b000 08:20 73957                      /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7ffff7c4f000-7ffff7c50000 rw-p 0002c000 08:20 73957                      /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7ffff7c50000-7ffff7c60000 r--p 00000000 08:20 54262                      /usr/lib/x86_64-linux-gnu/libm.so.6
+7ffff7c60000-7ffff7cdf000 r-xp 00010000 08:20 54262                      /usr/lib/x86_64-linux-gnu/libm.so.6
+7ffff7cdf000-7ffff7d37000 r--p 0008f000 08:20 54262                      /usr/lib/x86_64-linux-gnu/libm.so.6
+7ffff7d37000-7ffff7d38000 r--p 000e7000 08:20 54262                      /usr/lib/x86_64-linux-gnu/libm.so.6
+7ffff7d38000-7ffff7d39000 rw-p 000e8000 08:20 54262                      /usr/lib/x86_64-linux-gnu/libm.so.6
+7ffff7d39000-7ffff7dd6000 r--p 00000000 08:20 38085                      /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7ffff7dd6000-7ffff7f1e000 r-xp 0009d000 08:20 38085                      /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7ffff7f1e000-7ffff7fa5000 r--p 001e5000 08:20 38085                      /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7ffff7fa5000-7ffff7fb0000 r--p 0026b000 08:20 38085                      /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7ffff7fb0000-7ffff7fb3000 rw-p 00276000 08:20 38085                      /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+7ffff7fb3000-7ffff7fb7000 rw-p 00000000 00:00 0 
+7ffff7fbd000-7ffff7fbf000 rw-p 00000000 00:00 0 
+7ffff7fbf000-7ffff7fc3000 r--p 00000000 00:00 0                          [vvar]
+7ffff7fc3000-7ffff7fc5000 r-xp 00000000 00:00 0                          [vdso]
+7ffff7fc5000-7ffff7fc6000 r--p 00000000 08:20 54256                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffff7fc6000-7ffff7ff1000 r-xp 00001000 08:20 54256                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffff7ff1000-7ffff7ffb000 r--p 0002c000 08:20 54256                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffff7ffb000-7ffff7ffd000 r--p 00036000 08:20 54256                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffff7ffd000-7ffff7fff000 rw-p 00038000 08:20 54256                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffffffde000-7ffffffff000 rw-p 00000000 00:00 0                          [stack]
+</code></pre>
+		</div>
+	</article>
+</main>
+
+
+
+
+			</div>
+			<aside class="sidebar"><div class="widget-search widget">
+	<form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+		<input class="widget-search__field" type="search" placeholder="Search…" value="" name="q" aria-label="Search…">
+		<input class="widget-search__submit" type="submit" value="Search">
+		<input type="hidden" name="sitesearch" value="http://localhost:1313/">
+	</form>
+</div>
+<div class="widget-recent widget">
+	<h4 class="widget__title">Recent Posts</h4>
+	<div class="widget__content">
+		<ul class="widget__list">
+			<li class="widget__item"><a class="widget__link" href="/articles/huga/">Huga</a></li>
+			<li class="widget__item"><a class="widget__link" href="/articles/cie/">Cie</a></li>
+		</ul>
+	</div>
+</div>
+</aside>
+		</div>
+		<footer class="footer">
+	<div class="container footer__container flex">
+		
+		<div class="footer__copyright">
+			&copy; 2025 hideo&#39;s blog.
+			<span class="footer__copyright-credits">Generated with <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> and <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> theme.</span>
+		</div>
+	</div>
+</footer>
+	</div>
+<script async defer src="/js/menu.js"></script>
+</body>
+</html>
