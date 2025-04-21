@@ -6,8 +6,15 @@
     <description>Recent content in Articles on hideo&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-JP</language>
-    <lastBuildDate>Sun, 13 Apr 2025 16:45:28 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 21 Apr 2025 01:05:36 +0900</lastBuildDate>
     <atom:link href="https://example.org/articles/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WSL2でqemu実行時にbios-256k.binが格納されているフォルダの紹介</title>
+      <link>https://example.org/articles/2025/firmware1/</link>
+      <pubDate>Mon, 21 Apr 2025 01:05:36 +0900</pubDate>
+      <guid>https://example.org/articles/2025/firmware1/</guid>
+      <description>WSL2でqemu実行時にbios-256k.binが格納されているフォルダの紹介です。</description>
+    </item>
     <item>
       <title>Binary Hack RebootedのHack22のbinfmt_miscに関して</title>
       <link>https://example.org/articles/binfmt_misc/</link>

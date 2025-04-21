@@ -3,7 +3,7 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Huga - hideo&#39;s blog</title>
+	<title>Perf - hideo&#39;s blog</title>
 	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
 	<meta name="description" content="">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,11 +39,30 @@
 <main class="main" role="main">
 	<article class="post">
 		<header class="post__header">
-			<h1 class="post__title">Huga</h1>
+			<h1 class="post__title">Perf</h1>
 			
 		</header>
 		<div class="content post__content clearfix">
-			
+			<p>WSL2でperfを使えるようにしたが、自分の確認したい項目は<!-- raw HTML omitted -->と表示されました。解決策を知りたい。
+Binary Hack Rebooted Hack23でperfを利用します。
+この時、dTLB-stores,dTLB-store-missesの2項目を利用しますが、自分の環境では以下のようにnot supportedと表示されました。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>perf stat -e dTLB-stores,dTLB-store-misses ./tlbmiss <span style="color:#ae81ff">16384</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> Performance counter stats <span style="color:#66d9ef">for</span> <span style="color:#e6db74">&#39;./tlbmiss 16384&#39;</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   &lt;not supported&gt;      dTLB-stores:u                                                         
+</span></span><span style="display:flex;"><span>   &lt;not supported&gt;      dTLB-store-misses:u                                                   
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>       0.617897799 seconds time elapsed
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>       0.482195000 seconds user
+</span></span><span style="display:flex;"><span>       0.123113000 seconds sys
+</span></span></code></pre></div><p>自分の環境では、</p>
+<p>以下のフォルダが存在する場合は、UEFIのよう。
+WSLではマウントされていない</p>
+<pre tabindex="0"><code>$ ls /sys/firmware/
+acpi  memmap
+</code></pre>
 		</div>
 	</article>
 </main>

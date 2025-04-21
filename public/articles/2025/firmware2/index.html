@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Firmware2 - hideo&#39;s blog</title>
+	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+	<meta name="description" content="">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+
+	<link rel="stylesheet" href="/css/style.css">
+	
+
+	<link rel="shortcut icon" href="/favicon.ico">
+		
+</head>
+<body class="body">
+	<div class="container container--outer">
+		<header class="header">
+	<div class="container header__container">
+		
+	<div class="logo">
+		<a class="logo__link" href="/" title="hideo&#39;s blog" rel="home">
+			<div class="logo__item logo__text">
+					<div class="logo__title">hideo&#39;s blog</div>
+					
+				</div>
+		</a>
+	</div>
+		<div class="divider"></div>
+	</div>
+</header>
+		<div class="wrapper flex">
+			<div class="primary">
+			
+<main class="main" role="main">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">Firmware2</h1>
+			
+		</header>
+		<div class="content post__content clearfix">
+			<p>Binary Hack Rebooted（BHR）の QEMU上で動くファームウェアを作るの以下のコードが疑問でした。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-hello_world.S" data-lang="hello_world.S"><span style="display:flex;"><span><span style="color:#f92672">.intel_syntax</span> noprefix
+</span></span><span style="display:flex;"><span><span style="color:#f92672">.text</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">.code16</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>_start_text:
+</span></span><span style="display:flex;"><span>  mov <span style="color:#960050;background-color:#1e0010">ax</span>, <span style="color:#960050;background-color:#1e0010">0x</span><span style="color:#a6e22e">f00</span><span style="color:#960050;background-color:#1e0010">0</span>
+</span></span><span style="display:flex;"><span>  mov <span style="color:#960050;background-color:#1e0010">ds</span>, <span style="color:#960050;background-color:#1e0010">ax</span>
+</span></span><span style="display:flex;"><span>  lea <span style="color:#960050;background-color:#1e0010">si</span>, <span style="color:#960050;background-color:#1e0010">hello_world</span> #<span style="color:#960050;background-color:#1e0010"> si = </span>&#34;<span style="color:#e6db74">Hello, World&#34;\r\n\0</span>&#34;
+</span></span><span style="display:flex;"><span>  mov <span style="color:#960050;background-color:#1e0010">dx</span>, <span style="color:#960050;background-color:#1e0010">0</span><span style="color:#a6e22e">x3f8</span> #<span style="color:#960050;background-color:#1e0010"> </span><span style="color:#ae81ff">0x3f8</span> <span style="color:#960050;background-color:#1e0010">=</span> <span style="color:#960050;background-color:#1e0010">serial</span> <span style="color:#960050;background-color:#1e0010">port</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">略</span>
+</span></span><span style="display:flex;"><span>pwoer_on_rest:
+</span></span><span style="display:flex;"><span>  jmp <span style="color:#960050;background-color:#1e0010">0x</span><span style="color:#a6e22e">f00</span><span style="color:#960050;background-color:#1e0010">0:_start_text</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">.ascii</span> <span style="color:#960050;background-color:#1e0010">&#34;04/19/23&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">.align</span> 0x10000
+</span></span></code></pre></div><p>前提として、リアルモードではメモリアドレスをcode_segment:instruction_pointerという書き方で表します。
+この表現から物理アドレスを求めるときは以下の計算をします。
+address = code_segment * 0x10 + instruction_pointer</p>
+<p>BHRには物理アドレス0xF_0000のプログラムカウンタが0を指すという記載があります。
+インストラクションポインタとプログラムカウンタは同じ意味です。
+そのため、code_segmentの値が0xF000の時は、以下のように一意に分解でき、インストラクションポインタが0であることがわかります。
+0xF_0000 = 0xF000 * 0x10 + 0x0</p>
+<p>0xf000:_start_textのアドレスは0x70000 + _start_text
+リンカの設定でこのファイルの先頭アドレスが0となっています。
+作成したアセンブリの<code>jmp 0xf000:_start_text</code>と一致するバイナリを眺めると0x70000が埋め込まれていることがわかります。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ objdump -b binary -D -m i8086 -M intel  hello_world.bin 
+</span></span><span style="display:flex;"><span>// 略
+</span></span><span style="display:flex;"><span>    ffef:   <span style="color:#ae81ff">90</span>                    nop
+</span></span><span style="display:flex;"><span>    fff0:   ea <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> f0        jmp    0xf000:0x0
+</span></span><span style="display:flex;"><span>    fff5:   <span style="color:#ae81ff">30</span> <span style="color:#ae81ff">34</span>                 xor    BYTE PTR <span style="color:#f92672">[</span>si<span style="color:#f92672">]</span>,dh
+</span></span><span style="display:flex;"><span>    fff7:   2f                    das
+</span></span><span style="display:flex;"><span>    fff8:   <span style="color:#ae81ff">31</span> <span style="color:#ae81ff">39</span>                 xor    WORD PTR <span style="color:#f92672">[</span>bx+di<span style="color:#f92672">]</span>,di
+</span></span><span style="display:flex;"><span>    fffa:   2f                    das
+</span></span><span style="display:flex;"><span>    fffb:   <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">33</span>                 xor    dh,BYTE PTR <span style="color:#f92672">[</span>bp+di<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    fffd:   <span style="color:#ae81ff">90</span>                    nop
+</span></span><span style="display:flex;"><span>    fffe:   <span style="color:#ae81ff">89</span> f6                 mov    si,si
+</span></span><span style="display:flex;"><span>$
+</span></span></code></pre></div><p>ジャンプ先が0xf000:0x0 = 0xf0000とわかります。
+このBIOSをQEMUで読み込んだ時に_start_textが配置される物理メモリのアドレスが0xF0000となるのでしょうか？
+簡単にQEMUのソースコードを見た限り、今回作成したBIOSサイズが関係しているようです。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ls -l | grep hello_world.bin 
+</span></span><span style="display:flex;"><span>-rwxrwxrwx <span style="color:#ae81ff">1</span> XXXX XXXX  <span style="color:#ae81ff">65536</span> Apr <span style="color:#ae81ff">19</span> 18:35 hello_world.bin
+</span></span></code></pre></div><p>65536byte = 64byte * 1024 = 64 KiBです。
+BHR記載の通り、SPI Flash ROMの後半128KiBがx86起動時のメモリの先頭1MiBの後半の領域にマップされます。
+今回作成したファイルのサイズは64KiBのため、ファイル全体が1MiBの末尾にロードされることになります。
+配置される先頭のアドレスを計算すると
+1MiB - 64KiB = 0x10_0000 - 0x10000 = 0xF_0000
+となり、BIOSの先頭が0xF_0000となることがわかります。
+このアドレスは<code>jmp    0xf000:0x0</code>とジャンプ先のアドレスと一致していることがわかります。</p>
+<p>一致していそうなQEMU上のコードを眺めてみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-hw/i386/x86-common.c" data-lang="hw/i386/x86-common.c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">x86_bios_rom_init</span>(X86MachineState <span style="color:#f92672">*</span>x86ms, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>default_firmware,
+</span></span><span style="display:flex;"><span>                       MemoryRegion <span style="color:#f92672">*</span>rom_memory, <span style="color:#66d9ef">bool</span> isapc_ram_fw)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">machine_require_guest_memfd</span>(<span style="color:#a6e22e">MACHINE</span>(x86ms))) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">/* map the last 128KB of the BIOS in ISA space */</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">x86_isa_bios_init</span>(<span style="color:#f92672">&amp;</span>x86ms<span style="color:#f92672">-&gt;</span>isa_bios, rom_memory, <span style="color:#f92672">&amp;</span>x86ms<span style="color:#f92672">-&gt;</span>bios,
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">!</span>isapc_ram_fw);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-hw/i386/x86-common.c" data-lang="hw/i386/x86-common.c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">x86_isa_bios_init</span>(MemoryRegion <span style="color:#f92672">*</span>isa_bios, MemoryRegion <span style="color:#f92672">*</span>isa_memory,
+</span></span><span style="display:flex;"><span>                       MemoryRegion <span style="color:#f92672">*</span>bios, <span style="color:#66d9ef">bool</span> read_only)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// SPI Flash全体が読み込まれた領域。4GiBの末尾にあるbiosのこと。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// isa_biosが割当先
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// isa_memoryがシステム全体のメモリアドレス。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint64_t</span> bios_size <span style="color:#f92672">=</span> <span style="color:#a6e22e">memory_region_size</span>(bios);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint64_t</span> isa_bios_size <span style="color:#f92672">=</span> <span style="color:#a6e22e">MIN</span>(bios_size, <span style="color:#ae81ff">128</span> <span style="color:#f92672">*</span> KiB);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">memory_region_init_alias</span>(isa_bios, NULL, <span style="color:#e6db74">&#34;isa-bios&#34;</span>, bios,
+</span></span><span style="display:flex;"><span>                             bios_size <span style="color:#f92672">-</span> isa_bios_size, isa_bios_size);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1 * MiB - isa_bios_size(今回は0x10000)をケイサインして割り当てていそう
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">memory_region_add_subregion_overlap</span>(isa_memory, <span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> MiB <span style="color:#f92672">-</span> isa_bios_size,
+</span></span><span style="display:flex;"><span>                                        isa_bios, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">memory_region_set_readonly</span>(isa_bios, read_only);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-hw/i386/x86.h" data-lang="hw/i386/x86.h"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> X86MachineState {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/*&lt; private &gt;*/</span>
+</span></span><span style="display:flex;"><span>    MachineState parent;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 略
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Map the whole BIOS just underneath the 4 GiB address boundary. Only used
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * in the ROM (-bios) case.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    MemoryRegion bios;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Map the upper 128 KiB of the BIOS just underneath the 1 MiB address
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * boundary.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    MemoryRegion isa_bios;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 略
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>rom_memoryが何を表すか？</p>
+
+		</div>
+	</article>
+</main>
+
+
+
+
+			</div>
+			<aside class="sidebar"><div class="widget-search widget">
+	<form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+		<input class="widget-search__field" type="search" placeholder="Search…" value="" name="q" aria-label="Search…">
+		<input class="widget-search__submit" type="submit" value="Search">
+		<input type="hidden" name="sitesearch" value="http://localhost:1313/">
+	</form>
+</div>
+<div class="widget-recent widget">
+	<h4 class="widget__title">Recent Posts</h4>
+	<div class="widget__content">
+		<ul class="widget__list">
+			<li class="widget__item"><a class="widget__link" href="/articles/2025/firmware2/">Firmware2</a></li>
+			<li class="widget__item"><a class="widget__link" href="/articles/2025/firmware1/">Firmware</a></li>
+			<li class="widget__item"><a class="widget__link" href="/articles/2025/perf/">Perf</a></li>
+			<li class="widget__item"><a class="widget__link" href="/articles/binfmt_misc/">Binary Hack RebootedのHack22のbinfmt_miscに関して</a></li>
+			<li class="widget__item"><a class="widget__link" href="/articles/huga/">Huga</a></li>
+			<li class="widget__item"><a class="widget__link" href="/articles/cie/">Cie</a></li>
+		</ul>
+	</div>
+</div>
+</aside>
+		</div>
+		<footer class="footer">
+	<div class="container footer__container flex">
+		
+		<div class="footer__copyright">
+			&copy; 2025 hideo&#39;s blog.
+			<span class="footer__copyright-credits">Generated with <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> and <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> theme.</span>
+		</div>
+	</div>
+</footer>
+	</div>
+<script async defer src="/js/menu.js"></script>
+</body>
+</html>
