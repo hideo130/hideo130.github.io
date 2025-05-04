@@ -3,7 +3,7 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Huga - hideo&#39;s blog</title>
+	<title>Firmware3 - hideo&#39;s blog</title>
 	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
 	<meta name="description" content="">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,11 +39,16 @@
 <main class="main" role="main">
 	<article class="post">
 		<header class="post__header">
-			<h1 class="post__title">Huga</h1>
+			<h1 class="post__title">Firmware3</h1>
 			
 		</header>
 		<div class="content post__content clearfix">
-			
+			<p>qemuをインストールするためにNinjaが必要で、Ninjaをインストールするためにはre2cが必要だった。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo apt install re2c
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git clone https://github.com/ninja-build/ninja.git <span style="color:#f92672">&amp;&amp;</span> cd ninja
+</span></span><span style="display:flex;"><span>./configure.py --bootstrap
+</span></span><span style="display:flex;"><span>cp ninja /usr/bin/
+</span></span></code></pre></div>
 		</div>
 	</article>
 </main>
