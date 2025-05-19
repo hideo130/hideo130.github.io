@@ -2,10 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/articles/</loc>
-    <lastmod>2025-04-21T23:55:23+09:00</lastmod>
-  </url><url>
     <loc>https://example.org/</loc>
+    <lastmod>2025-05-20T00:01:11+09:00</lastmod>
+  </url><url>
+    <loc>https://example.org/link/</loc>
+    <lastmod>2025-05-20T00:01:11+09:00</lastmod>
+  </url><url>
+    <loc>https://example.org/articles/</loc>
     <lastmod>2025-04-21T23:55:23+09:00</lastmod>
   </url><url>
     <loc>https://example.org/articles/2025/x86-qemu/</loc>
